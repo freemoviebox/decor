@@ -15,7 +15,7 @@
             background-color: #f4f4f4;
         }
         .container {
-            max-width: 500px;
+            max-width: 900px;
             margin: auto;
             background: white;
             padding: 20px;
@@ -45,21 +45,37 @@
             }
         }
     </style>
+    <script>
+        async function fetchRSS() {
+            const sheetUrl = 'https://docs.google.com/spreadsheets/d/12A44S0r1OwMRnmz78jlE8bZ0DOzppA9AjO20aXdzeCY/gviz/tq?tqx=out:json';
+            const response = await fetch(sheetUrl);
+            const text = await response.text();
+            const json = JSON.parse(text.substring(47, text.length - 2));
+            const rows = json.table.rows;
+            
+            let rssContainer = document.getElementById('rss-feed');
+            rows.forEach(row => {
+                let title = row.c[0]?.v || '';
+                let description = row.c[1]?.v || '';
+                let imgUrl = row.c[2]?.v || '';
+                
+                let article = document.createElement('div');
+                article.innerHTML = `
+                    <h2>${title}</h2>
+                    <p>${description}</p>
+                    <img src="${imgUrl}" alt="${title}">
+                `;
+                rssContainer.appendChild(article);
+            });
+        }
+        
+        window.onload = fetchRSS;
+    </script>
 </head>
 <body>
     <div class="container">
-        <center><script type="text/javascript">
-	atOptions = {
-		'key' : '32417884c3de3b64cea14b0307a6b0c1',
-		'format' : 'iframe',
-		'height' : 250,
-		'width' : 300,
-		'params' : {}
-	};
-</script>
-<script type="text/javascript" src="//roastwearwritten.com/32417884c3de3b64cea14b0307a6b0c1/invoke.js"></script></center>
         <h1>Transform Your Space with Stunning Bedroom Decor Ideas</h1>
-        
+        <img src="bedroom-decor.jpg" alt="Modern Bedroom Decor">
         <p>Looking to revamp your bedroom? The right bedroom decor can turn your space into a cozy retreat where you can relax and unwind. From color schemes to furniture placement, every detail matters.</p>
         
         <h2>Choose a Color Palette That Speaks to You</h2>
@@ -75,6 +91,9 @@
         <p>Proper lighting enhances the mood of your bedroom. Use bedside lamps, LED strips, or pendant lights to create a warm and inviting environment.</p>
         
         <p>By incorporating these bedroom decor ideas, you can create a stylish and comfortable retreat. Start designing your dream bedroom today!</p>
+        
+        <h2>Latest Bedroom Decor Trends</h2>
+        <div id="rss-feed"></div>
     </div>
 </body>
 </html>
