@@ -47,17 +47,18 @@
     </style>
     <script>
         async function fetchRSS() {
-            const sheetUrl = 'https://docs.google.com/spreadsheets/d/12A44S0r1OwMRnmz78jlE8bZ0DOzppA9AjO20aXdzeCY/gviz/tq?tqx=out:json';
-            const response = await fetch(sheetUrl);
+            const rssUrl = 'https://freemoviebox.github.io/decor/rss';
+            const response = await fetch(rssUrl);
             const text = await response.text();
-            const json = JSON.parse(text.substring(47, text.length - 2));
-            const rows = json.table.rows;
+            let parser = new DOMParser();
+            let xmlDoc = parser.parseFromString(text, "text/xml");
+            let items = xmlDoc.getElementsByTagName("item");
             
             let rssContainer = document.getElementById('rss-feed');
-            rows.forEach(row => {
-                let title = row.c[0]?.v || '';
-                let description = row.c[1]?.v || '';
-                let imgUrl = row.c[2]?.v || '';
+            for (let i = 0; i < items.length; i++) {
+                let title = items[i].getElementsByTagName("title")[0].textContent;
+                let description = items[i].getElementsByTagName("description")[0].textContent;
+                let imgUrl = items[i].getElementsByTagName("enclosure")[0]?.getAttribute("url") || '';
                 
                 let article = document.createElement('div');
                 article.innerHTML = `
@@ -66,7 +67,7 @@
                     <img src="${imgUrl}" alt="${title}">
                 `;
                 rssContainer.appendChild(article);
-            });
+            }
         }
         
         window.onload = fetchRSS;
@@ -75,7 +76,7 @@
 <body>
     <div class="container">
         <h1>Transform Your Space with Stunning Bedroom Decor Ideas</h1>
-        <img src="room-decor-ideas1.png" alt="Modern Bedroom Decor">
+        <img src="bedroom-decor.jpg" alt="Modern Bedroom Decor">
         <p>Looking to revamp your bedroom? The right bedroom decor can turn your space into a cozy retreat where you can relax and unwind. From color schemes to furniture placement, every detail matters.</p>
         
         <h2>Choose a Color Palette That Speaks to You</h2>
